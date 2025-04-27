@@ -180,7 +180,7 @@ pal_copy:
 
 
 
-;void __fastcall__ pal_bg(const unsigned char *data);
+;void __fastcall__ pal_bg(const char *data);
 
 _pal_bg:
 

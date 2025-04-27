@@ -24,7 +24,7 @@ void __fastcall__ pal_all(const char *data);
 
 //set bg palette only, data is 16 bytes array
 
-void __fastcall__ pal_bg(const unsigned char *data);
+void __fastcall__ pal_bg(const char *data);
 
 //set spr palette only, data is 16 bytes array
 

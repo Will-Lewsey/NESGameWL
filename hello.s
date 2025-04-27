@@ -42,6 +42,7 @@
 	.export		_reset
 	.export		_score
 	.export		_end
+	.export		_speed
 	.export		_box1
 	.export		_box2
 	.export		_box3
@@ -69,6 +70,8 @@ _score:
 	.word	$0000
 _end:
 	.word	$0000
+_speed:
+	.word	$0001
 _box1:
 	.byte	$80
 	.byte	$24
@@ -572,11 +575,14 @@ L0018:	jsr     decsp3
 	jsr     _check_collision
 	sta     _topCollision
 ;
-; player.y++;
+; player.y = player.y + speed;
 ;
-	inc     _player+1
+	lda     _player+1
+	clc
+	adc     _speed
+	sta     _player+1
 ;
-; if ((collision1 + collision2 + collision3 + collision4 + collision5)) score = 0;
+; if ((collision1 + collision2 + collision3 + collision4 + collision5)) {
 ;
 	ldx     #$00
 	lda     _collision1
@@ -599,9 +605,19 @@ L0031:	adc     _collision5
 L002E:	stx     tmp1
 	ora     tmp1
 	beq     L0019
-	lda     #$00
+;
+; score = 0;
+;
+	ldx     #$00
+	txa
 	sta     _score
 	sta     _score+1
+;
+; speed = 1;
+;
+	lda     #$01
+	sta     _speed
+	stx     _speed+1
 ;
 ; if (bottomCollision) {
 ;
@@ -633,7 +649,7 @@ L001A:	lda     _score
 ; }
 ;
 	cpx     #$00
-	jne     L0029
+	jne     L002A
 	cmp     #$00
 	beq     L001F
 	cmp     #$01
@@ -641,7 +657,7 @@ L001A:	lda     _score
 	cmp     #$02
 	beq     L0021
 	cmp     #$03
-	beq     L0022
+	jeq     L0022
 	cmp     #$04
 	jeq     L0023
 	cmp     #$05
@@ -656,7 +672,7 @@ L001A:	lda     _score
 	jeq     L0028
 	cmp     #$0A
 	jeq     L0029
-	jmp     L0029
+	jmp     L002A
 ;
 ; oam_spr(0,0,0x0b,0);
 ;
@@ -708,6 +724,13 @@ L0021:	jsr     decsp3
 	txa
 	jsr     _oam_spr
 ;
+; speed = 2;
+;
+	ldx     #$00
+	lda     #$02
+	sta     _speed
+	stx     _speed+1
+;
 ; break;
 ;
 	jmp     L000D
@@ -743,6 +766,13 @@ L0023:	jsr     decsp3
 	sta     (sp),y
 	txa
 	jsr     _oam_spr
+;
+; speed = 3;
+;
+	ldx     #$00
+	lda     #$03
+	sta     _speed
+	stx     _speed+1
 ;
 ; break;
 ;
@@ -780,6 +810,13 @@ L0025:	jsr     decsp3
 	txa
 	jsr     _oam_spr
 ;
+; speed = 4;
+;
+	ldx     #$00
+	lda     #$04
+	sta     _speed
+	stx     _speed+1
+;
 ; break;
 ;
 	jmp     L000D
@@ -816,11 +853,18 @@ L0027:	jsr     decsp3
 	txa
 	jsr     _oam_spr
 ;
+; speed = 5;
+;
+	ldx     #$00
+	lda     #$05
+	sta     _speed
+	stx     _speed+1
+;
 ; break;
 ;
 	jmp     L000D
 ;
-; oam_spr(0,0,10,0);
+; oam_spr(0,0,0x0a,0);
 ;
 L0028:	jsr     decsp3
 	txa
@@ -838,9 +882,13 @@ L0028:	jsr     decsp3
 ;
 	jmp     L000D
 ;
+; ppu_off();
+;
+L0029:	jsr     _ppu_off
+;
 ; oam_spr(0,0,12,0);
 ;
-L0029:	jsr     decsp3
+L002A:	jsr     decsp3
 	lda     #$00
 	ldy     #$02
 	sta     (sp),y

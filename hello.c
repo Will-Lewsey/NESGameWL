@@ -35,6 +35,7 @@ int xpos5;
 int reset = 1;
 int score = 0;
 int end = 0;
+int speed = 1;
 
 struct collisionBox box1 = {128,36,8,8};
 struct collisionBox box2 = {128,72,8,8};
@@ -143,9 +144,12 @@ void main (void) {
 		bottomCollision = check_collision(&player, &bottomBox);
 		topCollision = check_collision(&player, &topBox);
 
-		player.y++;
+		player.y = player.y + speed;
 
-		if ((collision1 + collision2 + collision3 + collision4 + collision5)) score = 0;
+		if ((collision1 + collision2 + collision3 + collision4 + collision5)) {
+			score = 0;
+			speed = 1;
+		}
 
 		if (bottomCollision) {
 				seed++;
@@ -163,31 +167,34 @@ void main (void) {
 			break;
 		case 2:
 			oam_spr(0,0,3,0);
+			speed = 2;
 			break;
 		case 3:
 			oam_spr(0,0,4,0);
 			break;
 		case 4:
 			oam_spr(0,0,5,0);
+			speed = 3;
 			break;
 		case 5:
 			oam_spr(0,0,6,0);
 			break;
 		case 6:
 			oam_spr(0,0,7,0);
+			speed = 4;
 			break;
 		case 7:
 			oam_spr(0,0,8,0);
 			break;
 		case 8:
 			oam_spr(0,0,9,0);
+			speed = 5;
 			break;
 		case 9:
 			oam_spr(0,0,0x0a,0);
 			break;
 		case 0x0a:
-			//end = 1;
-			
+			ppu_off();
 		default:
 			oam_spr(0,0,12,0);
 			break;
